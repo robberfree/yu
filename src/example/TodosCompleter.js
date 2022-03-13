@@ -1,4 +1,4 @@
-import h from "../yu/component/h.js";
+import { h } from "../yu/index.js";
 /**
  * 全部待办项完成状态变更器
  */

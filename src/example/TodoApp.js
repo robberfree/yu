@@ -1,11 +1,9 @@
-import h from "../yu/component/h.js";
+import { h } from "../yu/index.js";
 import TodoFilter from "./TodoFilter.js";
 import TodoAdder from "./TodoAdder.js";
 import TodoLeft from "./TodoLeft.js";
 import Todos from "./Todos.js";
 import TodosCompleter from "./TodosCompleter.js";
-
-import Button from "./Button.js";
 
 /**
  * 待办应用
@@ -26,7 +24,6 @@ function TodoApp() {
   const addATodo = (name) => {
     const item = { name, completed: false };
     todos.unshift(item);
-    console.log("添加", todos);
 
     setTodos(todos);
   };
@@ -56,7 +53,6 @@ function TodoApp() {
   };
 
   return div([
-    Button(),
     //1
     TodoAdder({ onAdd: addATodo }),
     //2

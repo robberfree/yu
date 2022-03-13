@@ -25,50 +25,62 @@ function render(_component, _container) {
 
   virtualizeElement(component);
   renderElement(component, container);
+
+  console.log(component);
 }
 
 /**
- * 虚拟化element，遇到component主动调用获取children
+ * 虚拟化元素，遇到组件主动调用获取子元素
  */
-function virtualizeElement(component) {
-  if (!component) {
+function virtualizeElement(element, keyPath = []) {
+  if (!element) {
     return;
   }
 
-  let { type, props, children } = component;
+  let { type, props, children } = element;
   if (isFunction(type)) {
     //注入useState
     const useState = originalUseState.bind({
-      instanceKey: type.name,
+      keyPath,
       hookIndex: 0,
     });
     type = type.bind({ useState });
 
     children = type(props);
-    component.children = children;
+    element.children = children;
   }
 
-  if (!isArray(children)) {
-    children = [children];
+  keyPath = [...keyPath, "children"];
+  if (isArray(children)) {
+    children.forEach((child, index) => {
+      virtualizeElement(child, [...keyPath, index]);
+    });
+  } else {
+    virtualizeElement(children, keyPath);
   }
-
-  children.forEach((child) => virtualizeElement(child));
 }
 
 /**
- * 渲染一个元素
+ * 渲染元素
  */
 function renderElement(element, container) {
   if (!element) {
     return;
   }
 
-  let { type, props, children } = element;
+  let { type, props, children, dom } = element;
   let el = container;
 
   if (!isFunction(type)) {
-    el = createElement(type, props);
-    container.appendChild(el);
+    //差异检查没有做啊
+    if (dom) {
+      el = dom;
+      setProps(dom, props);
+    } else {
+      el = createElement(type, props);
+      container.appendChild(el);
+      element.dom = el;
+    }
   }
 
   if (!isArray(children)) {
@@ -87,6 +99,11 @@ function createElement(tagName, props) {
       ? document.createDocumentFragment()
       : document.createElement(tagName);
 
+  setProps(el, props);
+  return el;
+}
+
+function setProps(el, props) {
   isObject(props) &&
     Object.keys(props).forEach((prop) => {
       const value = props[prop];
@@ -97,7 +114,6 @@ function createElement(tagName, props) {
         el[prop] = value;
       }
     });
-  return el;
 }
 
 /**

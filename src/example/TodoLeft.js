@@ -1,4 +1,4 @@
-import h from "../yu/component/h.js";
+import { h } from "../yu/index.js";
 /**
  * 剩余代办项
  */

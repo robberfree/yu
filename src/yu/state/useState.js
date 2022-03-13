@@ -6,7 +6,7 @@ function useState(initialValue) {
   /**
    * useState绑定this，这样既可以保证useState的简洁，也可以把组件的实例key：instanceKey和useState的索引
    */
-  const key = `${this.instanceKey}.${this.hookIndex}`;
+  const key = `${this.keyPath.join(".")}.${this.hookIndex}`;
   this.hookIndex += 1;
 
   if (states[key] === undefined) {
@@ -15,11 +15,11 @@ function useState(initialValue) {
     }
   }
 
-  function setState(value) {
-    console.log(value);
+  const setState = (value) => {
     states[key] = value;
-    update();
-  }
+
+    update(this.keyPath);
+  };
 
   return [states[key], setState];
 }

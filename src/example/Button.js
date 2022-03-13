@@ -1,4 +1,4 @@
-import h from "../yu/component/h.js";
+import { h } from "../yu/index.js";
 
 function Button() {
   const useState = this.useState;
