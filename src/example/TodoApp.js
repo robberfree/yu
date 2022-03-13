@@ -1,47 +1,43 @@
-import { update } from "../yu/dom/render.js";
 import TodoFilter from "./TodoFilter.js";
 import TodoAdder from "./TodoAdder.js";
 import TodoLeft from "./TodoLeft.js";
 import Todos from "./Todos.js";
 import TodosCompleter from "./TodosCompleter.js";
-
-/**
- * state：所有代办项
- */
-const todos = Array.from({ length: 1000 }).map((_, index) => ({
-  name: `买菜${index}`,
-  completed: false,
-}));
-
-/**
- * state：过滤字段
- * 全部：0
- * 已完成：1
- * 未完成：2
- */
-let filter = 0;
+import useState from "../yu/state/useState.js";
 
 /**
  * 待办应用
  */
 function TodoApp() {
+  //所有代办项
+  const [todos, setTodos] = useState(
+    "TodoApp",
+    "todos",
+    Array.from({ length: 1000 }).map((_, index) => ({
+      name: `买菜${index}`,
+      completed: false,
+    }))
+  );
+  //过滤字段。全部：0、已完成：1，未完成：2
+  const [filter, setFilter] = useState("TodoApp", "id", 0);
+
   const addATodo = (name) => {
     const item = { name, completed: false };
     todos.unshift(item);
 
-    update();
+    setTodos(todos);
   };
 
   const removeATodo = (index) => {
     todos.splice(index, 1);
 
-    update();
+    setTodos(todos);
   };
 
   const changeATodo = (props, index) => {
     Object.assign(todos[index], props);
 
-    update();
+    setTodos(todos);
   };
 
   const changeTodosCompleted = (value) => {
@@ -49,13 +45,11 @@ function TodoApp() {
       todo.completed = value;
     });
 
-    update();
+    setTodos(todos);
   };
 
   const changeFilter = (value) => {
-    filter = value;
-
-    update();
+    setFilter(value);
   };
 
   return div([

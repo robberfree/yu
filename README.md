@@ -274,6 +274,10 @@ function update() {
 
 3. 我们目前没有对比 state 和 props 做差别化更新，而是一股脑移除旧的添加新的。这样有些根本没有更新必要的 input 框的焦点会失去。
 
+### 针对第一点
+
+实现 useState，要区分相同组件的不同实例，组件的不同 state。
+
 ## dom.property vs dom.attribute
 
 dom.attribute 是 html 相关的
