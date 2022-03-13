@@ -4,14 +4,14 @@ import TodoAdder from "./TodoAdder.js";
 import TodoLeft from "./TodoLeft.js";
 import Todos from "./Todos.js";
 import TodosCompleter from "./TodosCompleter.js";
-import originalUseState from "../yu/state/useState.js";
+
 import Button from "./Button.js";
 
 /**
  * 待办应用
  */
 function TodoApp() {
-  const useState = originalUseState.bind({ instanceKey: "TodoApp0", index: 0 });
+  const useState = this.useState;
 
   //所有代办项
   const [todos, setTodos] = useState(

@@ -1,8 +1,7 @@
 import h from "../yu/component/h.js";
-import originalUseState from "../yu/state/useState.js";
 
 function Button() {
-  const useState = originalUseState.bind({ instanceKey: "Button0", index: 0 });
+  const useState = this.useState;
 
   const [count, setCount] = useState(0);
 

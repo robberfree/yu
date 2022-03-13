@@ -1,14 +1,9 @@
 import h from "../yu/component/h.js";
-import originalUseState from "../yu/state/useState.js";
-
 /**
  * 代办项添加器
  */
 function TodoAdder({ onAdd }) {
-  const useState = originalUseState.bind({
-    instanceKey: "TodoAdder0",
-    index: 0,
-  });
+  const useState = this.useState;
 
   const [value, setValue] = useState("");
 

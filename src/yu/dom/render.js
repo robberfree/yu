@@ -1,5 +1,6 @@
 import "../component/tag2Component.js";
 import { isArray, isFunction, isObject } from "../is/index.js";
+import originalUseState from "../state/useState.js";
 
 let component;
 let container;
@@ -22,6 +23,13 @@ function buildVdom(component) {
 
   let { type, props, children } = component;
   if (isFunction(type)) {
+    //注入useState
+    const useState = originalUseState.bind({
+      instanceKey: type.name,
+      hookIndex: 0,
+    });
+    type = type.bind({ useState });
+
     children = type(props);
     component.children = children;
   }
