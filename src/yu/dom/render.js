@@ -6,17 +6,31 @@ let component;
 let container;
 
 /**
+ * Element: Component + HTML Element
+ * {
+ *  type
+ *  children
+ *  props
+ * }
+ * Component: 函数组件
+ * HTML Element: html元素
+ */
+
+/**
  * 将组件渲染到容器
  */
 function render(_component, _container) {
   component = _component;
   container = _container;
 
-  buildVdom(component);
-  renderVdom(component, container);
+  virtualizeElement(component);
+  renderElement(component, container);
 }
 
-function buildVdom(component) {
+/**
+ * 虚拟化element，遇到component主动调用获取children
+ */
+function virtualizeElement(component) {
   if (!component) {
     return;
   }
@@ -38,15 +52,18 @@ function buildVdom(component) {
     children = [children];
   }
 
-  children.forEach((child) => buildVdom(child));
+  children.forEach((child) => virtualizeElement(child));
 }
 
-function renderVdom(component, container) {
-  if (!component) {
+/**
+ * 渲染一个元素
+ */
+function renderElement(element, container) {
+  if (!element) {
     return;
   }
 
-  let { type, props, children } = component;
+  let { type, props, children } = element;
   let el = container;
 
   if (!isFunction(type)) {
@@ -58,7 +75,7 @@ function renderVdom(component, container) {
     children = [children];
   }
 
-  children.forEach((child) => renderVdom(child, el));
+  children.forEach((child) => renderElement(child, el));
 }
 
 /**
@@ -93,8 +110,8 @@ function update() {
   });
 
   //2. 重新渲染
-  buildVdom(component);
-  renderVdom(component, container);
+  virtualizeElement(component);
+  renderElement(component, container);
 }
 
 export { render, update };
