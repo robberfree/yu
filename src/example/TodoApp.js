@@ -1,3 +1,4 @@
+import h from "../yu/component/h.js";
 import TodoFilter from "./TodoFilter.js";
 import TodoAdder from "./TodoAdder.js";
 import TodoLeft from "./TodoLeft.js";
@@ -14,7 +15,7 @@ function TodoApp() {
 
   //所有代办项
   const [todos, setTodos] = useState(
-    Array.from({ length: 1000 }).map((_, index) => ({
+    Array.from({ length: 2 }).map((_, index) => ({
       name: `买菜${index}`,
       completed: false,
     }))
@@ -25,6 +26,7 @@ function TodoApp() {
   const addATodo = (name) => {
     const item = { name, completed: false };
     todos.unshift(item);
+    console.log("添加", todos);
 
     setTodos(todos);
   };
@@ -69,4 +71,4 @@ function TodoApp() {
   ]);
 }
 
-export default TodoApp;
+export default h(TodoApp);

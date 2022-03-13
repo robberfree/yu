@@ -1,3 +1,4 @@
+import h from "../yu/component/h.js";
 import Todo from "./Todo.js";
 
 /**
@@ -14,7 +15,7 @@ function Todos({ todos, filter, onChange, onRemove }) {
     }
   };
 
-  return fragment(
+  return div(
     todos.map((item, index) => {
       return isShow(item)
         ? Todo({
@@ -31,4 +32,4 @@ function Todos({ todos, filter, onChange, onRemove }) {
   );
 }
 
-export default Todos;
+export default h(Todos);

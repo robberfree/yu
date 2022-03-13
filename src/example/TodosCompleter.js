@@ -1,7 +1,7 @@
+import h from "../yu/component/h.js";
 /**
  * 全部待办项完成状态变更器
  */
-
 function TodosCompleter({ todos, onChange }) {
   let checked =
     todos.length === 0 ? false : todos.every(({ completed }) => completed);
@@ -20,4 +20,4 @@ function TodosCompleter({ todos, onChange }) {
   });
 }
 
-export default TodosCompleter;
+export default h(TodosCompleter);

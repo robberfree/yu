@@ -1,4 +1,5 @@
-import "./html.js";
+import "../component/tag2Component.js";
+import { isArray, isFunction, isObject } from "../is/index.js";
 
 let component;
 let container;
@@ -10,7 +11,68 @@ function render(_component, _container) {
   component = _component;
   container = _container;
 
-  container.appendChild(component());
+  buildVdom(component);
+  renderVdom(component, container);
+}
+
+function buildVdom(component) {
+  if (!component) {
+    return;
+  }
+
+  let { type, props, children } = component;
+  if (isFunction(type)) {
+    children = type(props);
+    component.children = children;
+  }
+
+  if (!isArray(children)) {
+    children = [children];
+  }
+
+  children.forEach((child) => buildVdom(child));
+}
+
+function renderVdom(component, container) {
+  if (!component) {
+    return;
+  }
+
+  let { type, props, children } = component;
+  let el = container;
+
+  if (!isFunction(type)) {
+    el = createElement(type, props);
+    container.appendChild(el);
+  }
+
+  if (!isArray(children)) {
+    children = [children];
+  }
+
+  children.forEach((child) => renderVdom(child, el));
+}
+
+/**
+ * 创建元素
+ */
+function createElement(tagName, props) {
+  const el =
+    tagName === "fragment"
+      ? document.createDocumentFragment()
+      : document.createElement(tagName);
+
+  isObject(props) &&
+    Object.keys(props).forEach((prop) => {
+      const value = props[prop];
+
+      if (prop === "contenteditable") {
+        el.setAttribute(prop, value);
+      } else {
+        el[prop] = value;
+      }
+    });
+  return el;
 }
 
 /**
@@ -23,7 +85,8 @@ function update() {
   });
 
   //2. 重新渲染
-  container.appendChild(component());
+  buildVdom(component);
+  renderVdom(component, container);
 }
 
 export { render, update };

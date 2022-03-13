@@ -1,3 +1,4 @@
+import h from "../yu/component/h.js";
 /**
  * 代办项
  */
@@ -31,4 +32,4 @@ function Todo({ name, completed, onChange, onRemove }) {
   ]);
 }
 
-export default Todo;
+export default h(Todo);

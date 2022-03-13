@@ -1,3 +1,4 @@
+import h from "../yu/component/h.js";
 /**
  * 剩余代办项
  */
@@ -7,4 +8,4 @@ function TodoLeft({ todos }) {
   return div({ textContent: `未完成代办项: ${left}` });
 }
 
-export default TodoLeft;
+export default h(TodoLeft);

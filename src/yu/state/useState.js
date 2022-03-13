@@ -9,6 +9,8 @@ function useState(initialValue) {
   const key = `${this.instanceKey}.${this.index}`;
   this.index += 1;
 
+  console.log(this);
+
   if (states[key] === undefined) {
     if (initialValue !== undefined) {
       states[key] = initialValue;
@@ -16,6 +18,7 @@ function useState(initialValue) {
   }
 
   function setState(value) {
+    console.log(value);
     states[key] = value;
     update();
   }

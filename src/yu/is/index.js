@@ -6,4 +6,8 @@ function isObject(value) {
   return Object.prototype.toString.call(value) === "[object Object]";
 }
 
-export { isArray, isObject };
+function isFunction(value) {
+  return typeof value === "function";
+}
+
+export { isArray, isObject, isFunction };

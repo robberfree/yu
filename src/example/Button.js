@@ -1,3 +1,4 @@
+import h from "../yu/component/h.js";
 import originalUseState from "../yu/state/useState.js";
 
 function Button() {
@@ -13,4 +14,4 @@ function Button() {
   });
 }
 
-export default Button;
+export default h(Button);

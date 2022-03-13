@@ -1,7 +1,7 @@
+import h from "../yu/component/h.js";
 /**
  * 全部、已完成、未完成筛选
  */
-
 function TodoFilter({ filter, onChange }) {
   const filters = [
     { label: "全部", value: 0 },
@@ -31,4 +31,4 @@ function TodoFilter({ filter, onChange }) {
   );
 }
 
-export default TodoFilter;
+export default h(TodoFilter);
