@@ -278,6 +278,8 @@ function update() {
 
 实现 useState，要区分相同组件的不同实例，组件的不同 state。
 
+1. 区分相同组件的不同实例
+
 ## dom.property vs dom.attribute
 
 dom.attribute 是 html 相关的

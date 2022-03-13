@@ -13,7 +13,7 @@ import { isArray, isObject } from "../is/index.js";
    * 3. (children)
    * 4. ()
    */
-  window[tagName] = function component(props, children) {
+  window[tagName] = function Component(props, children) {
     if (props && !isObject(props)) {
       children = props;
     }

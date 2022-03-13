@@ -3,23 +3,24 @@ import TodoAdder from "./TodoAdder.js";
 import TodoLeft from "./TodoLeft.js";
 import Todos from "./Todos.js";
 import TodosCompleter from "./TodosCompleter.js";
-import useState from "../yu/state/useState.js";
+import originalUseState from "../yu/state/useState.js";
+import Button from "./Button.js";
 
 /**
  * 待办应用
  */
 function TodoApp() {
+  const useState = originalUseState.bind({ instanceKey: "TodoApp0", index: 0 });
+
   //所有代办项
   const [todos, setTodos] = useState(
-    "TodoApp",
-    "todos",
     Array.from({ length: 1000 }).map((_, index) => ({
       name: `买菜${index}`,
       completed: false,
     }))
   );
   //过滤字段。全部：0、已完成：1，未完成：2
-  const [filter, setFilter] = useState("TodoApp", "id", 0);
+  const [filter, setFilter] = useState(0);
 
   const addATodo = (name) => {
     const item = { name, completed: false };
@@ -53,6 +54,7 @@ function TodoApp() {
   };
 
   return div([
+    Button(),
     //1
     TodoAdder({ onAdd: addATodo }),
     //2
