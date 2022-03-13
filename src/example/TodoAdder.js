@@ -1,11 +1,7 @@
 /**
  * 代办项添加器
- * <div>
- *  <input/>
- *  <button>添加</button>
- * </div>
  */
-function TodoItemAdder({ onAdd }) {
+function TodoAdder({ onAdd }) {
   const _input = input();
 
   return div([
@@ -22,4 +18,4 @@ function TodoItemAdder({ onAdd }) {
   ]);
 }
 
-export default TodoItemAdder;
+export default TodoAdder;

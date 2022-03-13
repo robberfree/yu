@@ -1,20 +1,32 @@
 /**
  * 全部、已完成、未完成筛选
- *
- * <div>
- *  <input type="radio" name="filter"/>
- *  <label>全部</label>
- *  ...
- * <div>
  */
 
-function TodoFilter({ by }) {
+function TodoFilter({ filter, onChange }) {
+  const filters = [
+    { label: "全部", value: 0 },
+    { label: "已完成", value: 1 },
+    { label: "未完成", value: 2 },
+  ];
   return div(
-    ["全部", "已完成", "未完成"].map((_by) =>
-      fragment(null, [
-        input({ type: "radio", checked: by === _by }),
-        label({ textContent: _by }),
-      ])
+    {
+      className: "todo-filter",
+    },
+    filters.map(({ label: textContent, value }) =>
+      div(
+        {
+          onclick: () => {
+            onChange(value);
+          },
+        },
+        [
+          input({
+            type: "radio",
+            checked: filter === value,
+          }),
+          label({ textContent }),
+        ]
+      )
     )
   );
 }

@@ -1,10 +1,34 @@
-import TodoItem from "./ToDoItem.js";
+import Todo from "./Todo.js";
 
 /**
- * 代办项列表
+ * 所有代办项列表
  */
-function Todos({ todos }) {
-  return fragment(todos.map((item) => TodoItem(item)));
+function Todos({ todos, filter, onChange, onRemove }) {
+  const isShow = ({ completed }) => {
+    if (filter === 1) {
+      return completed === true;
+    } else if (filter === 2) {
+      return completed === false;
+    } else {
+      return true;
+    }
+  };
+
+  return fragment(
+    todos.map((item, index) => {
+      return isShow(item)
+        ? Todo({
+            ...item,
+            onChange: (props) => {
+              onChange(props, index);
+            },
+            onRemove: () => {
+              onRemove(index);
+            },
+          })
+        : null;
+    })
+  );
 }
 
 export default Todos;

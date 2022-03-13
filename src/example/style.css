@@ -1,3 +1,7 @@
-.checkbox-todo-filter {
+.completer-filter {
+  display: flex;
+}
+
+.todo-filter {
   display: flex;
 }

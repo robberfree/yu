@@ -178,4 +178,105 @@ export default TodoItem;
 
 ## 整个系统捕获 state 更新
 
-写到现在我们的待办程序，是一次性静态创建视图的。如何动态多次创建视图呢？
+写到现在我们的待办程序，是一次性静态创建视图的。如何动态更新视图呢？
+
+- 建立机制触发更新。
+
+```js
+import { update } from "../yu/dom/render.js";
+
+/**
+ * state：所有代办项
+ */
+const todos = Array.from({ length: 1000 }).map((_, index) => ({
+  name: `买菜${index}`,
+  completed: false,
+}));
+
+/**
+ * state：过滤字段
+ * 全部：0
+ * 已完成：1
+ * 未完成：2
+ */
+let filter = 0;
+
+/**
+ * 待办应用
+ */
+function TodoApp() {
+  const addATodo = (name) => {
+    const item = { name, completed: false };
+    todos.unshift(item);
+
+    update();
+  };
+
+  const removeATodo = (index) => {
+    todos.splice(index, 1);
+
+    update();
+  };
+
+  const changeATodo = (props, index) => {
+    Object.assign(todos[index], props);
+
+    update();
+  };
+
+  const changeTodosCompleted = (value) => {
+    todos.forEach((todo) => {
+      todo.completed = value;
+    });
+
+    update();
+  };
+
+  const changeFilter = (value) => {
+    filter = value;
+
+    update();
+  };
+
+  return div([
+    //1
+    TodoAdder({ onAdd: addATodo }),
+    //2
+    div({ className: "completer-filter" }, [
+      TodosCompleter({ todos, onChange: changeTodosCompleted }),
+      TodoFilter({ filter, onChange: changeFilter }),
+    ]),
+    //3
+    Todos({ todos, filter, onChange: changeATodo, onRemove: removeATodo }),
+    //4
+    TodoLeft({ todos }),
+  ]);
+}
+```
+
+```js
+function update() {
+  //1. 移除container下面的元素。
+  container.childNodes.forEach((node) => {
+    container.removeChild(node);
+  });
+
+  //2. 重新渲染
+  container.appendChild(component());
+}
+```
+
+目前这种方式有两种问题，
+
+1. 为了避免函数组件执行的时候，state 丢失，我们把 state 提升到上一个作用域里去了。但这种写法其实很傻，因为直觉上，它没有把本该属于函数组件的 state，写在函数组件里。
+
+2. 我们目前需要显示触发 update。
+
+3. 我们目前没有对比 state 和 props 做差别化更新，而是一股脑移除旧的添加新的。这样有些根本没有更新必要的 input 框的焦点会失去。
+
+## dom.property vs dom.attribute
+
+dom.attribute 是 html 相关的
+dom.property 是 dom 相关的。
+
+理论上 attribute 都应该转成 property，设置 dom 的 property 一定能有效果。

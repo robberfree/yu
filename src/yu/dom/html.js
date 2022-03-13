@@ -7,7 +7,7 @@ import { isArray, isObject } from "../is/index.js";
   /**
    * @param {object} props
    * @param {Component|[Component]} children
-   * 为了方便传参，有如下4种传参情困过
+   * 为了方便传参，有如下4种传参情形
    * 1. (props,children)
    * 2. (props)
    * 3. (children)
@@ -35,7 +35,13 @@ function createElement(tagName, props) {
 
   isObject(props) &&
     Object.keys(props).forEach((prop) => {
-      el[prop] = props[prop];
+      const value = props[prop];
+
+      if (prop === "contenteditable") {
+        el.setAttribute(prop, value);
+      } else {
+        el[prop] = value;
+      }
     });
   return el;
 }
