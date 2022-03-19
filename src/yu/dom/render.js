@@ -6,25 +6,14 @@ let component;
 let container;
 
 /**
- * Element: Component + HTML Element
- * {
- *  type
- *  children
- *  props
- * }
- * Component: 函数组件
- * HTML Element: html元素
- */
-
-/**
  * 将组件渲染到容器
  */
 function render(_component, _container) {
   component = _component;
   container = _container;
 
-  virtualizeElement(component);
-  renderElement(component, container);
+  virtualizeNode(component);
+  renderNode(component, container);
 
   console.log(component);
 }
@@ -32,12 +21,12 @@ function render(_component, _container) {
 /**
  * 虚拟化元素，遇到组件主动调用获取子元素
  */
-function virtualizeElement(element, keyPath = []) {
-  if (!element) {
+function virtualizeNode(node, keyPath = []) {
+  if (!node) {
     return;
   }
 
-  let { type, props, children } = element;
+  let { type, props, children } = node;
   if (isFunction(type)) {
     //注入useState
     const useState = originalUseState.bind({
@@ -47,28 +36,28 @@ function virtualizeElement(element, keyPath = []) {
     type = type.bind({ useState });
 
     children = type(props);
-    element.children = children;
+    node.children = children;
   }
 
   keyPath = [...keyPath, "children"];
   if (isArray(children)) {
     children.forEach((child, index) => {
-      virtualizeElement(child, [...keyPath, index]);
+      virtualizeNode(child, [...keyPath, index]);
     });
   } else {
-    virtualizeElement(children, keyPath);
+    virtualizeNode(children, keyPath);
   }
 }
 
 /**
  * 渲染元素
  */
-function renderElement(element, container) {
-  if (!element) {
+function renderNode(node, container) {
+  if (!node) {
     return;
   }
 
-  let { type, props, children, dom } = element;
+  let { type, props, children, dom } = node;
   let el = container;
 
   if (!isFunction(type)) {
@@ -79,7 +68,7 @@ function renderElement(element, container) {
     } else {
       el = createElement(type, props);
       container.appendChild(el);
-      element.dom = el;
+      node.dom = el;
     }
   }
 
@@ -87,7 +76,7 @@ function renderElement(element, container) {
     children = [children];
   }
 
-  children.forEach((child) => renderElement(child, el));
+  children.forEach((child) => renderNode(child, el));
 }
 
 /**
@@ -103,6 +92,9 @@ function createElement(tagName, props) {
   return el;
 }
 
+/**
+ * 更新真实元素的属性
+ */
 function setProps(el, props) {
   isObject(props) &&
     Object.keys(props).forEach((prop) => {
@@ -126,8 +118,8 @@ function update() {
   });
 
   //2. 重新渲染
-  virtualizeElement(component);
-  renderElement(component, container);
+  virtualizeNode(component);
+  renderNode(component, container);
 }
 
 export { render, update };
