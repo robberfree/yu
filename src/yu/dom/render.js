@@ -12,16 +12,16 @@ function render(_component, _container) {
   component = _component;
   container = _container;
 
-  virtualizeNode(component);
+  expandNode(component);
   renderNode(component, container);
 
   console.log(component);
 }
 
 /**
- * 虚拟化元素，遇到组件主动调用获取子元素
+ * 展开节点。如果节点是组件，主动调用以获取子元素
  */
-function virtualizeNode(node, keyPath = []) {
+function expandNode(node, keyPath = []) {
   if (!node) {
     return;
   }
@@ -42,10 +42,10 @@ function virtualizeNode(node, keyPath = []) {
   keyPath = [...keyPath, "children"];
   if (isArray(children)) {
     children.forEach((child, index) => {
-      virtualizeNode(child, [...keyPath, index]);
+      expandNode(child, [...keyPath, index]);
     });
   } else {
-    virtualizeNode(children, keyPath);
+    expandNode(children, keyPath);
   }
 }
 
@@ -118,7 +118,7 @@ function update() {
   });
 
   //2. 重新渲染
-  virtualizeNode(component);
+  expandNode(component);
   renderNode(component, container);
 }
 
