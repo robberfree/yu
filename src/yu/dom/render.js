@@ -1,6 +1,8 @@
 import "../component/tag2Component.js";
-import { isArray, isFunction, isObject } from "../is/index.js";
-import originalUseState from "../state/useState.js";
+import { isArray, isString, isFunction, isObject } from "../is/index.js";
+import { setProps } from "./element.js";
+import { expandNode } from "./node.js";
+import diff from "./diff.js";
 
 let component;
 let container;
@@ -19,64 +21,31 @@ function render(_component, _container) {
 }
 
 /**
- * 展开节点。如果节点是组件，主动调用以获取子元素
+ * 渲染节点
  */
-function expandNode(node, keyPath = []) {
+function renderNode(node, parent) {
   if (!node) {
     return;
   }
+
+  node.parent = parent;
 
   let { type, props, children } = node;
-  if (isFunction(type)) {
-    //注入useState
-    const useState = originalUseState.bind({
-      keyPath,
-      hookIndex: 0,
-    });
-    type = type.bind({ useState });
 
-    children = type(props);
-    node.children = children;
-  }
+  if (isString(type)) {
+    const el = createElement(type, props);
+    setProps(el, props);
+    node.el = el;
 
-  keyPath = [...keyPath, "children"];
-  if (isArray(children)) {
-    children.forEach((child, index) => {
-      expandNode(child, [...keyPath, index]);
-    });
-  } else {
-    expandNode(children, keyPath);
-  }
-}
+    parent.appendChild(el);
 
-/**
- * 渲染元素
- */
-function renderNode(node, container) {
-  if (!node) {
-    return;
-  }
-
-  let { type, props, children, dom } = node;
-  let el = container;
-
-  if (!isFunction(type)) {
-    //差异检查没有做啊
-    if (dom) {
-      el = dom;
-      setProps(dom, props);
-    } else {
-      el = createElement(type, props);
-      container.appendChild(el);
-      node.dom = el;
-    }
+    parent = el;
   }
 
   if (!isArray(children)) {
     children = [children];
   }
-
-  children.forEach((child) => renderNode(child, el));
+  children.forEach((child) => renderNode(child, parent));
 }
 
 /**
@@ -88,38 +57,14 @@ function createElement(tagName, props) {
       ? document.createDocumentFragment()
       : document.createElement(tagName);
 
-  setProps(el, props);
   return el;
-}
-
-/**
- * 更新真实元素的属性
- */
-function setProps(el, props) {
-  isObject(props) &&
-    Object.keys(props).forEach((prop) => {
-      const value = props[prop];
-
-      if (prop === "contenteditable") {
-        el.setAttribute(prop, value);
-      } else {
-        el[prop] = value;
-      }
-    });
 }
 
 /**
  * 更新
  */
-function update() {
-  //1. 移除container下面的元素。
-  container.childNodes.forEach((node) => {
-    container.removeChild(node);
-  });
-
-  //2. 重新渲染
-  expandNode(component);
-  renderNode(component, container);
+function update(keyPath) {
+  diff(component, keyPath);
 }
 
 export { render, update };

@@ -10,4 +10,8 @@ function isFunction(value) {
   return typeof value === "function";
 }
 
-export { isArray, isObject, isFunction };
+function isString(value) {
+  return typeof value === "string";
+}
+
+export { isArray, isObject, isFunction, isString };

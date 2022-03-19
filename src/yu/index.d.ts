@@ -18,9 +18,13 @@ interface Node {
    */
   children: Node[];
   /**
-   * 节点对应的真实元素
+   * 节点对应的元素
    */
   el: Element;
+  /**
+   * 节点的父元素
+   */
+  parent: Element;
 }
 
 /**

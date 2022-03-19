@@ -280,6 +280,12 @@ function update() {
 
 1. 区分相同组件的不同实例
 
+## 如何查找一颗树和另一颗树的树别
+
+目前的核心问题在于如何查找到上次的 element 元素
+
+1. 比如我在组件里的某一个元素更新了 state，那我可以有一种机制知道是哪一个元素吗？
+
 ## dom.property vs dom.attribute
 
 dom.attribute 是 html 相关的
