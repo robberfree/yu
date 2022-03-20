@@ -1,4 +1,17 @@
 import { isObject } from "../is/index.js";
+
+/**
+ * 创建元素
+ */
+function createElement(tagName) {
+  const el =
+    tagName === "fragment"
+      ? document.createDocumentFragment()
+      : document.createElement(tagName);
+
+  return el;
+}
+
 /**
  * 设置element的属性
  */
@@ -16,4 +29,4 @@ function setProps(el, props) {
     });
 }
 
-export { setProps };
+export { createElement, setProps };

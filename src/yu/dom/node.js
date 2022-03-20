@@ -1,5 +1,7 @@
-import { isArray, isFunction, isObject } from "../is/index.js";
+import { isArray, isFunction, isObject, isString } from "../is/index.js";
 import bind from "../hook/bind.js";
+import { createElement, setProps } from "./element.js";
+import arrayize from "../util/arrayize.js";
 
 /**
  * 展开节点。如果节点是组件，主动调用以获取子元素。
@@ -51,4 +53,29 @@ function cloneNode(node) {
   return node;
 }
 
-export { expandNode, cloneNode };
+/**
+ * 渲染节点
+ */
+function renderNode(node, parent) {
+  if (!node) {
+    return;
+  }
+
+  node.parent = parent;
+
+  let { type, props, children } = node;
+
+  if (isString(type)) {
+    const el = createElement(type, props);
+    setProps(el, props);
+    node.el = el;
+
+    parent.appendChild(el);
+
+    parent = el;
+  }
+
+  arrayize(children, (child) => renderNode(child, parent));
+}
+
+export { expandNode, cloneNode, renderNode };

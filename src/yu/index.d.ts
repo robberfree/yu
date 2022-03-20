@@ -20,18 +20,21 @@ interface Node {
   /**
    * 节点对应的元素
    */
-  el: Element;
+  el?: Element;
   /**
    * 节点的父元素
    */
-  parent: Element;
+  parent?: Element;
 }
 
 /**
  * 概念: Component
  *
  * 组件, 在yu里有且仅有函数组件。
+ *
  */
+
+function Component(props, children: Node | Node[]): Node;
 
 /**
  * 概念: Element

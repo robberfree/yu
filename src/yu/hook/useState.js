@@ -4,7 +4,7 @@ const states = {};
 
 function useState(initialValue) {
   /**
-   * useState绑定this，这样既可以保证useState的简洁，也可以把组件的实例key：instanceKey和useState的索引
+   * useState绑定this，这样既可以保证useState的简洁，也可以把组件的keyPath和hookIndex传递过来
    */
   const key = `${this.keyPath.join(".")}.${this.hookIndex}`;
   this.hookIndex += 1;
