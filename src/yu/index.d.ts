@@ -6,6 +6,10 @@
  */
 interface Node {
   /**
+   * 节点的唯一标志符
+   */
+  typeof: Symbol; //Symbol.for('yu.node');
+  /**
    *  节点的类型
    */
   type: Function | "string";
@@ -16,7 +20,7 @@ interface Node {
   /**
    * 节点的子元素
    */
-  children: Node[];
+  children: Node | Node[];
   /**
    * 节点对应的元素
    */
@@ -39,5 +43,5 @@ function Component(props, children: Node | Node[]): Node;
 /**
  * 概念: Element
  *
- * 元素，真实的渲染到页面里的原属
+ * 元素，真实的渲染到页面里的元素
  */

@@ -1,0 +1,359 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h1>实现一个前端框架(UI库)</h1>
+			</section>
+			<section>
+				<ul style="list-style: none;">
+					<li>
+						<a href="#/target">1. 目标</a>
+					</li>
+					<li>
+						<a href="#/yu">2. yu</a>
+					</li>
+					<li>
+						<a href="#step">3. 分步实现</a>
+					</li>
+				</ul>
+			</section>
+			<section id="target">
+				<h2>1. 目标</h2>
+				<ul>
+					<li>
+						仅依靠原生能力(js、css、html)。不引入<del style="color:#c04851">工程化</del>思想。
+					</li>
+					<li>
+						<span style="color:#428675">只有</span>函数式组件。
+					</li>
+					<li>
+						符合直觉，足够简约。
+					</li>
+				</ul>
+			</section>
+			<section id="yu">
+				<h2>2. yu</h2>
+				<p>框架的中文名叫做<span style="color:#428675">鱼</span>。英文名也叫做<span style="color:#428675">yu</span>。</p>
+			</section>
+			<section id="step">
+				<h2>3. 分步实现</h2>
+				<ul style="list-style: none;">
+					<li>
+						<a href="#/step-function">3.1 函数式组件</a>
+					</li>
+					<li>
+						<a href="#/step-element">3.2 html元素</a>
+					</li>
+					<li>
+						<a href="#/step-state">3.3 state</a>
+					</li>
+					<li>
+						<a href="#/step-diff">3.4 diff算法</a>
+					</li>
+				</ul>
+			</section>
+			<section id="step-function">
+				<h3>3.1 函数式组件</h3>
+				<p>
+					直觉上<span style="color:#428675">函数</span>是很适合用于组件定义的。 函数接收参数返回值。<span
+						style="color:#428675">组件</span>接收属性返回视图。
+				</p>
+
+				<div style="display: flex;">
+					<div style="flex: 1;">
+						<label style="font-size: 16px;">函数</label>
+						<pre>
+							<code data-trim data-noescape>
+								function(params) {
+									return;
+								}
+							</code>
+						</pre>
+					</div>
+					<div style="flex: 1;">
+						<label style="font-size: 16px;">组件</label>
+						<pre style="margin-left: 16px;">
+							<code data-trim data-noescape>
+								function Component(props) {
+									const state:any;
+	
+									const el:HTMLElement;
+	
+									return el;
+								}
+							</code>
+						</pre>
+					</div>
+				</div>
+			</section>
+			<section>
+				<p>
+					虽然我们最终期望组件返回视图元素。但如果不在组件和元素之间建立一种数据结构，那更复杂的变换将无从下手。
+					所以yu定义了<span style="color:#428675">Node</span>数据结构。组件的定义现在变成这样：
+				</p>
+				<pre style="margin-left: 16px;">
+					<code data-trim data-noescape>
+						interface Node {							
+							typeof: Symbol;				
+							type: Function | "string";							
+							props: Object;							
+							children: Node | Node[];							
+						}
+
+						function Component(props) {
+							const state:any;
+
+							const node:Node;
+
+							return node;
+						}
+					</code>
+				</pre>
+			</section>
+			<section>
+				<p>
+					定义了Node数据结构，但我们不可能手动去定义整个应用程序的组件结构。为了<span style="color:#428675">书写方便</span>，yu定义了一个高阶函数: h 。
+				</p>
+				<pre style="margin-left: 16px;">
+					<code data-trim data-noescape data-line-numbers="1">
+						function h(Component) {
+							return function WrapperComponent(_props, _children) {
+							  const { props, children } = propsChildren(_props, _children);
+						  
+							  return {
+									type: Component,
+									props,
+									children,
+									typeof: Symbol.for("yu.node"),
+							  };
+							};
+						}
+					</code>
+				</pre>
+			</section>
+			<section>
+				<p>
+					所有自定义组件在导出前必须手动调用h。
+				</p>
+				<pre style="margin-left: 16px;">
+					<code data-trim data-noescape data-line-numbers="26">
+						import { h } from "../yu/index.js";
+
+						function TodoAdder({ onAdd }) {
+							const useState = this.useState;
+
+							const [value, setValue] = useState("");
+
+							return div([
+								input({
+									value: value,
+									oninput: (e) => {
+											setValue(e.target.value);
+									},
+								}),
+								button({
+									textContent: "添加",
+									onclick: () => {
+										if (value) {
+											onAdd(value);
+										}
+									},
+								}),
+							]);
+						}
+
+						export default h(TodoAdder);
+					</code>
+				</pre>
+			</section>
+
+			<section id="step-element">
+				<h3>3.2 html元素</h3>
+				<p>
+					无论什么前端ui库，最终的最小视图都是html元素。那如何高效地创建<span style="color:#428675">元素</span>呢？
+					社区通常有两种做法：
+				</p>
+				<ul>
+					<li>
+						<a href="https://github.com/facebook/jsx">jsx</a>
+					</li>
+					<li>
+						<a href="https://github.com/developit/htm">tagged template</a>
+					</li>
+				</ul>
+
+			</section>
+			<section>
+				<p>
+					但是它们都不符合yu设定的目标。yu把html元素也看作组件。暴露在window上。
+				</p>
+				<pre>
+					<code data-trim data-noescape data-line-numbers="2">
+						["div", "input", "label", "button", "fragment"].forEach((type) => {
+							window[type] = function TagComponent(_props, _children) {
+							  const { props, children } = propsChildren(_props, _children);
+						  
+							  return {
+									type,
+									props,
+									children,
+									typeof: "yu.node",
+								};
+							};
+						});
+					</code>
+				</pre>
+			</section>
+			<section id="step-state">
+				<h3>3.3 state</h3>
+				<p>
+					state是组件<span style="color:#428675">实例</span>的可变数据。yu是通过<a
+						href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">bind</a>函数向useState注入组件实例的信息。
+				</p>
+				<div style="display: flex;">
+					<div style="flex: 1;">
+						<label style="font-size: 16px;">bind函数</label>
+						<pre>
+							<code data-trim data-noescape>
+								import originalUseState from "./useState.js";
+
+								
+								function bind(component, keyPath) {
+									const useState = originalUseState.bind({
+										keyPath,
+										hookIndex: 0,
+									});
+
+									return component.bind({ useState });
+								}
+
+								export default bind;
+							</code>
+						</pre>
+					</div>
+					<div style="flex: 1;">
+						<label style="font-size: 16px;">组件实例化时绑定</label>
+						<pre style="margin-left: 16px;">
+							<code data-trim data-noescape>
+								if (isFunction(type)) {
+									type = bind(type, keyPath);
+								
+									children = type(props);
+									node.children = children;
+								}
+							</code>
+						</pre>
+					</div>
+				</div>
+			</section>
+			<section>
+				<label style="font-size: 16px;">使用useState</label>
+				<pre>
+						<code data-trim data-noescape>
+							import { update } from "../dom/render.js";
+
+							const states = {};
+
+							function useState(initialValue) {
+							
+								const key = `${this.keyPath.join(".")}.${this.hookIndex}`;
+								this.hookIndex += 1;
+
+								if (states[key] === undefined) {
+									if (initialValue !== undefined) {
+									states[key] = initialValue;
+									}
+								}
+
+								const setState = (value) => {
+									states[key] = value;
+
+									update(this.keyPath);
+								};
+
+								return [states[key], setState];
+							}
+
+							export default useState;
+						</code>
+					</pre>
+
+				<p><span style="color:#c04851">问题</span>：有没有发现目前做法的问题？提示词：children、key</p>
+
+			</section>
+			<section id="step-diff">
+				<h3>3.4 diff算法</h3>
+				<p>
+					无论多么复杂的组件结构，人总是知道哪些被更改过。而程序却很难知道，或者要做很多工作才能像人一样知道。
+				</p>
+				<ul>
+					<li>增</li>
+					<li>删</li>
+					<li>改</li>
+				</ul>
+
+			</section>
+			<section>
+
+				<pre>
+					<code data-trim data-noescape>					
+						function diff(appNode, initKeyPath, callback) {
+							//旧的节点
+							const prevNode = initKeyPath.reduce((node, key) => node[key], appNode);
+
+							//新的节点
+							let nextNode = cloneNode(prevNode);
+							expandNode(nextNode, initKeyPath);
+
+							console.log(prevNode, nextNode, initKeyPath);
+							//比较节点差异
+							diffNode(prevNode, nextNode, prevNode.parent);
+
+							//用新的节点替换旧的
+							replace(appNode, initKeyPath, nextNode, callback);
+						}
+					</code>
+				</pre>
+
+			</section>
+			<section>
+				<h2>未完待续...</h2>
+			</section>
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+		});
+	</script>
+</body>
+
+</html>
